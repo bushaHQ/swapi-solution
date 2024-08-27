@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busha-deployment
+  namespace: busha-namespace
+  labels:
+    app: busha-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: busha-app
+  template:
+    metadata:
+      labels:
+        app: busha-app
+    spec:
+      containers:
+      - name: busha-container
+        image: busha:latest
+        ports:
+        - containerPort: 8100
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8100
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8100
+          initialDelaySeconds: 10
+          periodSeconds: 10
